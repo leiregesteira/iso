@@ -1,4 +1,5 @@
 #include "my_AEScrypt-header.h"
+
 int InsertAndEncryptFile(const char *RepoFileName, const char *SourceFileName){
 
     //char SourceFileName[256];       // Original SourceFile
@@ -12,7 +13,7 @@ int InsertAndEncryptFile(const char *RepoFileName, const char *SourceFileName){
     
     int i,ret, Tam;
     int fd_RepoFile;
-    unsigned long RepoFileSize, n, offset;
+    unsigned long RepoFileSize, n, offset, rn;
 
     // ------------------------------------------------------------------------------
     // For the moment the keys will be fixed values.
@@ -38,40 +39,41 @@ int InsertAndEncryptFile(const char *RepoFileName, const char *SourceFileName){
     // ----------------------------------------------------------------
     // (1.1) open EVP_AEScryptRepo Repository File  
     //   File name: RepoFileName i
-    //   Flags:  O_WRONLY | O_CREAT 
+    //   Flags:  O_RDWR | O_CREAT 
     //   Mode : 0600
     //  To complete the code 
     /// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-	fd_RepoFile = open(RepoFileName, O_WRONLY|O_CREAT, 0600);
+	fd_RepoFile = open(RepoFileName, O_RDWR|O_CREAT, 0600);
 	if(fd_RepoFile == -1){
 		fprintf(stderr,"Error al abrir el fichero %s.\n", RepoFileName);
        		exit(ERROR_OPEN_DAT_FILE);
 	}
     
-    
+		
     /// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 
     // ----------------------------------------------------------------
     // (1.2)Write  my_EVP_AES_header  (of FileName) to the Repository File (RepoFileName)
     RepoFileSize = 0;
-    
-	if (sizeof(fd_RepoFile)!=0){
-                if (lseek(fd_RepoFile, 0L, SEEK_END)==-1)
+    	printf("ANTES DEL SEEK");
+        if (sizeof(fd_RepoFile)!=0){
+                printf("EN EL SEEK");
+		if (lseek(fd_RepoFile, 0L, SEEK_END)==-1)
                        fprintf(stderr, "Error al hacer el seek");
 	}
 
-    //  To complete the code 
-    /// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
-	n = write(fd_RepoFile, &my_AES_RepoHeader, sizeof(my_AES_RepoHeader)); 
-		if(n != sizeof(my_AES_RepoHeader)){
-		fprintf(stderr,"Error al abrir el fichero %s.\n", RepoFileName);
+
+        n = write(fd_RepoFile, &my_AES_RepoHeader, sizeof(my_AES_RepoHeader));
+                if(n != sizeof(my_AES_RepoHeader)){
+                fprintf(stderr,"Error al abrir el fichero %s.\n", RepoFileName);
                 exit(ERROR_ENCRIPTING_FILE);
 
-	}  
+        }
+		
 
-
-    
+    //  To complete the code 
+    /// vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     /// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
     RepoFileSize = RepoFileSize +n;       // Update  RepoFileSize file size
